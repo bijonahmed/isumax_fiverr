@@ -41,7 +41,7 @@ class ForgotPasswordController extends Controller
         $email          = $request->email;
         $current_domain = $request->current_domain;
 
-        $chkUser = User::where('email', $email)->where('role_id', 2)->first();
+        $chkUser = User::where('email', $email)->first();
 
         if (empty($chkUser)) {
             return response()->json([
