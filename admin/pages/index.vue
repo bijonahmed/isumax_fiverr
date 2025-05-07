@@ -16,7 +16,7 @@
         <button @click="login" class="btn btn-primary w-100" :disabled="loading">
           {{ loading ? 'Logging in...' : 'Login' }}
         </button>
-        <small><div class="text-center"><nuxt-link to="/verificode">Verifiy code</nuxt-link></div></small>
+        <!-- <small><div class="text-center"><nuxt-link to="/verificode">Verifiy code</nuxt-link></div></small> -->
       </div>
     </div>
   </div>
@@ -39,30 +39,45 @@ const requiresVerification = ref(false);
 const isLoggedIn = computed(() => userStore.isLoggedIn);
 
 async function login() {
-  loading.value = true; // Show loading state
-  errors.value = {}; // Reset errors
+  loading.value = true;
+  errors.value = {};
 
   try {
     console.log("Email:", email.value);
     console.log("Password:", password.value);
 
-    await userStore.adminLogin(email.value, password.value);
-    requiresVerification.value = true;
+    const response = await userStore.adminLogin(email.value, password.value);
 
-    // Redirect to verification code page after login
-    router.push("/verificode");
+    // Store token if returned from login
+    const token = response?.token || userStore.token;
+    if (token) {
+      localStorage.setItem("token", token);
+    }
+
+    const userrole = localStorage.getItem("userrole");
+    console.log("userrole:" + userrole);
+
+    if (parseInt(userrole) == 1) {
+      if (userStore.isLoggedIn) {
+        window.location.href = "/admin/dashboard";
+       // router.push("/admin/dashboard");
+      }
+    } else {
+      router.push("/");
+    }
+
   } catch (error) {
     if (error.response) {
-      // Display error message from response
       errors.value = error.response.data.errors || {};
       swal.fire('Login Failed', error.response.data.message || 'Invalid credentials', 'error');
     } else {
       swal.fire('Error', 'An error occurred while trying to log in. Please try again later.', 'error');
     }
   } finally {
-    loading.value = false; // Reset loading state
+    loading.value = false;
   }
 }
+
 </script>
 
 

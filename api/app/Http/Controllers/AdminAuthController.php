@@ -75,53 +75,79 @@ class AdminAuthController extends Controller
         $user = auth('api')->user();
         //dd($user);
         // Check if the user's status requires verification
-        if ($user->status == 1) {
-
-            $verificationCode = rand(10000, 99999); // Generate a random 5-digit verification code
-            $expiryTime = now()->addMinutes(5); // Set expiry time to 5 minutes from now
-
-            // Save the verification code and expiry time to the user record
-            $user->verification_code            = $verificationCode;
-            $user->verification_code_expires_at = $expiryTime;
-            $user->verification_status          = 0;
-            $user->save();
-
-            // Send the verification code via email
-            if (is_null($user->email)) {
-                return response()->json(['error' => 'Email address not found.'], 400);
-            }
 
 
-            Mail::to($user->email)->queue(new VerificationCodeMail($verificationCode));
+        $verificationCode = rand(10000, 99999); // Generate a random 5-digit verification code
+        $expiryTime = now()->addMinutes(5); // Set expiry time to 5 minutes from now
 
-            // try {
-            //     Mail::raw("Your verification code is: $verificationCode", function ($message) use ($user) {
-            //         $message->to($user->email)->subject('Verification Code');
-            //     });
-            //     return response()->json([
-            //         'message' => 'Verification code sent successfully to your email.',
-            //         'requires_verification' => true // Indicate that verification is needed
-            //     ], 200);
-            // } catch (\Exception $e) {
-            //     return response()->json(['error' => 'Failed to send email: ' . $e->getMessage()], 500);
-            // }
+        // Save the verification code and expiry time to the user record
+        $user->verification_code            = $verificationCode;
+        $user->verification_code_expires_at = $expiryTime;
+        $user->verification_status          = 0;
+        $user->save();
 
-            //  $user = auth('api')->user(); // Retrieve the authenticated user
-            return response()->json([
-                'access_token'  => $token,
-                'token_type'    => 'bearer',
-                'expires_in'    => auth('api')->factory()->getTTL() * 60,
-                'user' => [
-                    'id'        => $user->id,
-                    'role_id'   => $user->role_id,
-                    'verification_status'   => $user->verification_status,
-                    'name'      => $user->name,
-                    'email'     => $user->email,
-                    'status'    => $user->status,
-                    // Add any other user information you want to include
-                ],
-            ]);
+        // Send the verification code via email
+        if (is_null($user->email)) {
+            return response()->json(['error' => 'Email address not found.'], 400);
         }
+
+
+        /*
+            Mail::to($user->email)->queue(new VerificationCodeMail($verificationCode));
+            $to = $user->email;
+            $subject = "Your Verification Code";
+            $verificationCode = $user->verification_code;
+            
+            $message = "
+            <html>
+            <head>
+              <title>Your Verification Code</title>
+            </head>
+            <body>
+              <p>Dear User,</p>
+              <p>Your verification code is:</p>
+              <h2 style='color: #007bff;'>$verificationCode</h2>
+              <p>This code will expire in 5 minutes.</p>
+              <p>If you did not request this, please ignore the email.</p>
+              <br>
+              <p>Regards,<br>Isumax.com Team</p>
+            </body>
+            </html>
+            ";
+            
+            $headers  = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+            $headers .= "From: Isumax.com <noreply@isumax.com>" . "\r\n";
+            
+            mail($to, $subject, $message, $headers);
+            */
+        // try {
+        //     Mail::raw("Your verification code is: $verificationCode", function ($message) use ($user) {
+        //         $message->to($user->email)->subject('Verification Code');
+        //     });
+        //     return response()->json([
+        //         'message' => 'Verification code sent successfully to your email.',
+        //         'requires_verification' => true // Indicate that verification is needed
+        //     ], 200);
+        // } catch (\Exception $e) {
+        //     return response()->json(['error' => 'Failed to send email: ' . $e->getMessage()], 500);
+        // }
+
+        //  $user = auth('api')->user(); // Retrieve the authenticated user
+        return response()->json([
+            'access_token'  => $token,
+            'token_type'    => 'bearer',
+            'expires_in'    => auth('api')->factory()->getTTL() * 60,
+            'user' => [
+                'id'        => $user->id,
+                'role_id'   => $user->role_id,
+                //'verification_status'   => $user->verification_status,
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'status'    => $user->status,
+                // Add any other user information you want to include
+            ],
+        ]);
 
         return response()->json([
             'errors' => [
@@ -131,6 +157,9 @@ class AdminAuthController extends Controller
             ]
         ], 422);
     }
+
+
+
 
     public function verifyCode(Request $request)
     {

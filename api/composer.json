@@ -13,7 +13,7 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "srmklive/paypal": "^3.0",
-        "stripe/stripe-php": "^16.5",
+        "stripe/stripe-php": "^17.1",
         "tymon/jwt-auth": "^2.0",
         "yajra/laravel-datatables": "10.0"
     },

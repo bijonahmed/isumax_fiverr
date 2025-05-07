@@ -4,7 +4,7 @@ import axios from "~/plugins/axios";
 const $axios = axios().provide.axios;
 export const useUserStore = defineStore("user", {
   state: () => ({
-    verification_status:"",
+    verification_status: "",
     verificationCode: "",
     id: "",
     full_name: "",
@@ -43,7 +43,7 @@ export const useUserStore = defineStore("user", {
           this.$state.email = result.data.user.email;
           this.$state.id = result.data.user.id;
           this.$state.role_id = result.data.user.role_id;
-          this.$state.status = result.data.user.status;   
+          this.$state.status = result.data.user.status;
           this.$state.isLoggedIn = true;
         });
     },
@@ -56,17 +56,16 @@ export const useUserStore = defineStore("user", {
         deviceTime: deviceTime,
       })
         .then((result) => {
-
-          console.log("State check Verification : " + result.data.user.verification_status);
+          //   console.log("State check Verification : " + result.data.user.verification_status);
           localStorage.setItem("token", result.data.access_token || "");
           localStorage.setItem("userrole", result.data.user.role_id || "");
-          localStorage.setItem("requires_verification", 0);
+          //localStorage.setItem("requires_verification", 0);
           this.$state.api_token = result.data.access_token || "";
           this.$state.email = result.data.user.email || "";
           this.$state.id = result.data.user.id || "";
           this.$state.role_id = result.data.user.role_id || "";
           this.$state.status = result.data.user.status || "";
-          this.$state.verification_status = result.data.user.verification_status;
+          //   this.$state.verification_status = result.data.user.verification_status;
           this.$state.isLoggedIn = true;
           // Assuming the response structure includes token and user info
 

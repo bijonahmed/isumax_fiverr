@@ -1,6 +1,6 @@
 <template>
   <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4" v-if="verfificationSts == 0 & isLoggedIn">
+  <aside class="main-sidebar sidebar-dark-primary elevation-4" v-if="isLoggedIn">
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar Menu -->
